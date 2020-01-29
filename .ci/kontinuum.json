@@ -1,0 +1,4 @@
+{
+"type":"cli",
+"stages":[{"name":"test"},{"name":"build"}]
+}
