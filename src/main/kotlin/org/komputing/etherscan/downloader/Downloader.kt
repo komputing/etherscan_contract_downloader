@@ -9,6 +9,8 @@ import com.squareup.moshi.Moshi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.kethereum.erc55.withERC55Checksum
+import org.kethereum.model.Address
 import java.io.File
 
 private const val ETHERSCAN_API_TOKEN = "YourApiKeyToken"
@@ -29,7 +31,7 @@ suspend fun main() {
     val list = csvReader().readAllWithHeader(inputFile)
 
     val addresses = list.mapNotNull { it["ContractAddress"] }
-    addresses.forEachIndexed { i, address ->
+    addresses.map { Address(it).withERC55Checksum() }.forEachIndexed { i, address ->
         println("" + i + "/" + addresses.size)
         processContract(address)
     }
@@ -42,8 +44,8 @@ typealias ContentToCode = Map<String, String>
 typealias FilenameToContentToCode = Map<String, ContentToCode>
 typealias SourcesFilenameToContentToCode = Map<String, FilenameToContentToCode>
 
-private suspend fun processContract(address: String) {
-    val contractPath = File(baseContractPath, address.replace("0x", ""))
+private suspend fun processContract(address: Address) {
+    val contractPath = File(baseContractPath, address.hex)
     val abiFile = File(contractPath, "contract.abi")
 
     if (contractPath.exists()) return
@@ -91,14 +93,14 @@ private suspend fun processContract(address: String) {
     delay(420)
 }
 
-private fun retryProcessContract(address: String) = GlobalScope.launch {
+private fun retryProcessContract(address: Address) = GlobalScope.launch {
     processContract(address)
 }
 
 private fun processMultipleFiles(
     codeGetResult: CodeGetResult,
     contractPath: File,
-    address: String
+    address: Address
 ) {
 
     try {

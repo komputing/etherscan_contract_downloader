@@ -25,10 +25,15 @@ application {
 
 repositories {
     jcenter()
+    maven("https://jitpack.io")
 }
 
 dependencies {
     "implementation"("org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlin}")
+
+    "implementation"("com.github.komputing.kethereum:model:0.80.1")
+    "implementation"("com.github.komputing.kethereum:erc55:0.80.1")
+
     "implementation"("com.github.doyaaaaaken:kotlin-csv-jvm:0.7.3")
     "implementation"("com.github.kittinunf.fuel:fuel-moshi:2.2.1")
     "implementation"("com.squareup.moshi:moshi:${Versions.moshi}")
